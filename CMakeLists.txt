@@ -17,23 +17,29 @@ include(cmake/variables.cmake)
 
 add_library(
     johninstall_lib OBJECT
-    source/lib.cpp
+    src/lib.cpp
 )
 
 target_include_directories(
     johninstall_lib ${warning_guard}
     PUBLIC
-    "\$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
+    "\$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>"
 )
 
 target_compile_features(johninstall_lib PUBLIC cxx_std_17)
 
-find_package(fmt REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 target_link_libraries(johninstall_lib PRIVATE fmt::fmt)
+
+set(CURSES_NEED_NCURSES TRUE)
+    find_package(Curses REQUIRED)
+    target_include_directories(johninstall_lib PRIVATE ${CURSES_INCLUDE_DIRS})
+    target_compile_options(johninstall_lib PRIVATE ${CURSES_CFLAGS})
+    target_link_libraries(johninstall_lib PRIVATE ${CURSES_LIBRARIES})
 
 # ---- Declare executable ----
 
-add_executable(johninstall_exe source/main.cpp)
+add_executable(johninstall_exe src/main.cpp)
 add_executable(johninstall::exe ALIAS johninstall_exe)
 
 set_property(TARGET johninstall_exe PROPERTY OUTPUT_NAME johninstall)

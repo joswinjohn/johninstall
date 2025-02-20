@@ -1,4 +1,4 @@
-# johninstall
+# JohnInstall
 
 JohnOS guided installer textual user interface using ncurses.
 
