@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Prerequisites
 *.d
 
@@ -30,3 +31,18 @@
 *.exe
 *.out
 *.app
+=======
+**/.DS_Store
+.idea/
+.vs/
+.vscode/
+build/
+cmake-build-*/
+prefix/
+.clangd
+CMakeLists.txt.user
+CMakeUserPresets.json
+compile_commands.json
+
+.github.bak
+>>>>>>> 5985c46 (initialize cmake)
