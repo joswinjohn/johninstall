@@ -1,57 +1,50 @@
-#include <string>
+#include <utility>
 #include <vector>
 
 #include <ncurses.h>
 
+#include "curse.hpp"
 #include "lib.hpp"
+#include "window.hpp"
 
-#define GRID_SPLIT 5
+#define GRID_SPLIT_H 5
+#define GRID_SPLIT_W 1
 
 int main()
 {
   initscr();
   curs_set(0);
 
-  int h, w;
-  getmaxyx(stdscr, h, w);
-  int ht = (h - 4) / GRID_SPLIT;
+  std::pair<int, int> size = curse::get_size();
+  int seg_h = (size.first - 4) / GRID_SPLIT_H;
+  int seg_w = (size.second - 4) / GRID_SPLIT_W;
 
-  WINDOW* w_intro = newwin(ht * 4, w - 4, 2, 2);
-  WINDOW* w_ans = newwin(ht, w - 4, (ht * 4) + 2, 2);
-  refresh();
-
-  // top windows
-  box(w_intro, 0, 0);
-
-  mvwprintw(w_intro, 0, 1, "Intro");
-  mvwprintw(w_intro,
-            2,
+  window win(seg_h * 4, seg_w, 2, 2);
+  win.box();
+  win.print(2,
             4,
             "This is the guided JohnOS installer. to continute or move back "
             "use the \"Next\" and \"Back\" buttons");
-  wrefresh(w_intro);
 
-  // bottom choices
-  box(w_ans, 0, 0);
-  wrefresh(w_ans);
-
-  keypad(w_ans, true);
+  window w_ans(seg_h, seg_w, (seg_h * 4) + 2, 2);
+  w_ans.box();
+  w_ans.keypad(true);
 
   std::vector<std::string> choices = {"Exit", "Next"};
   int choice;
   int highlighted = 0;
 
-  size_t choices_size = choices.size();
+  int choices_size = static_cast<int>(choices.size());
 
   while (true) {
     for (int i = 0; i < choices_size; i++) {
       if (i == highlighted) {
-        wattron(w_ans, A_REVERSE);
+        w_ans.reverse_on();
       }
-      mvwprintw(w_ans, i + 1, 1, choices.at(i).c_str());
-      wattroff(w_ans, A_REVERSE);
+      w_ans.print(i + 1, 1, choices.at(i));
+      w_ans.reverse_off();
     }
-    choice = wgetch(w_ans);
+    choice = w_ans.wget();
     switch (choice) {
       case KEY_UP:
         highlighted--;
@@ -61,7 +54,7 @@ int main()
         break;
       case KEY_DOWN:
         highlighted++;
-        if (highlighted == static_cast<int>(choices_size)) {
+        if (highlighted == choices_size) {
           highlighted = 0;
         }
         break;
@@ -73,8 +66,7 @@ int main()
     }
   }
 
-  mvwprintw(w_intro, 8, 4, choices[highlighted].c_str());
-  wrefresh(w_intro);
+  win.print(8, 4, choices[highlighted]);
 
   getch();
   endwin();
