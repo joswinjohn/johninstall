@@ -3,12 +3,20 @@
 
 #include <ncurses.h>
 
+#include "answer_box.hpp"
 #include "curse.hpp"
-#include "lib.hpp"
-#include "window.hpp"
+#include "windows.hpp"
 
 #define GRID_SPLIT_H 5
 #define GRID_SPLIT_W 1
+
+#define exit() \
+  endwin(); \
+  return 0;
+
+int windows::h;
+int windows::w;
+window* windows::active = nullptr;
 
 int main()
 {
@@ -16,59 +24,21 @@ int main()
   curs_set(0);
 
   std::pair<int, int> size = curse::get_size();
-  int seg_h = (size.first - 4) / GRID_SPLIT_H;
-  int seg_w = (size.second - 4) / GRID_SPLIT_W;
+  windows::h = (size.first - 4) / GRID_SPLIT_H;
+  windows::w = (size.second - 4) / GRID_SPLIT_W;
 
-  window win(seg_h * 4, seg_w, 2, 2);
-  win.box();
-  win.print(2,
-            4,
-            "This is the guided JohnOS installer. to continute or move back "
-            "use the \"Next\" and \"Back\" buttons");
+  windows::start_window();
+  answer_box w_ans;
 
-  window w_ans(seg_h, seg_w, (seg_h * 4) + 2, 2);
-  w_ans.box();
-  w_ans.keypad(true);
+  if (w_ans.selection({"Next", "Exit"}) == 1) {
+    exit();
+  }
+  windows::partition_window_1();
 
-  std::vector<std::string> choices = {"Exit", "Next"};
-  int choice;
-  int highlighted = 0;
-
-  int choices_size = static_cast<int>(choices.size());
-
-  while (true) {
-    for (int i = 0; i < choices_size; i++) {
-      if (i == highlighted) {
-        w_ans.reverse_on();
-      }
-      w_ans.print(i + 1, 1, choices.at(i));
-      w_ans.reverse_off();
-    }
-    choice = w_ans.wget();
-    switch (choice) {
-      case KEY_UP:
-        highlighted--;
-        if (highlighted == -1) {
-          highlighted = choices_size - 1;
-        }
-        break;
-      case KEY_DOWN:
-        highlighted++;
-        if (highlighted == choices_size) {
-          highlighted = 0;
-        }
-        break;
-      default:
-        break;
-    }
-    if (choice == 10) {
-      break;
-    }
+  if (w_ans.selection({"Next", "Back"}) == 1) {
+    exit();
   }
 
-  win.print(8, 4, choices[highlighted]);
-
   getch();
-  endwin();
-  return 0;
+  exit();
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 #include <ncurses.h>
@@ -9,6 +11,7 @@ public:
 
   int h, w, y, x;
 
+  // clang-tidy suggestions
   window(const window&) = default;
   window(window&&) = delete;
   auto operator=(const window&) -> window& = default;
