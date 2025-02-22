@@ -7,7 +7,8 @@
       "name": "fmt",
       "version>=": "11.0.2#1"
     },
-    "ncurses"
+    "ncurses",
+    "nlohmann-json"
   ],
   "features": {
     "test": {

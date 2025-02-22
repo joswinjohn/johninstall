@@ -1,7 +1,9 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
+#include "config.hpp"
 #include "window.hpp"
 
 class windows
@@ -35,8 +37,8 @@ public:
   {
     window w_partition(h * 4, w, 2, 2);
     w_partition.box();
-    w_partition.print(
-        2, 4, R"(partition page use the "Next" and "Back" buttons)");
+    w_partition.print(2, 4, R"(Select your next partition)");
+    w_partition.print(6, 4, config::conf["script"]);
     active = &w_partition;
   }
 };

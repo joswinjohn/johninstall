@@ -32,10 +32,13 @@ find_package(fmt CONFIG REQUIRED)
 target_link_libraries(johninstall_lib PRIVATE fmt::fmt)
 
 set(CURSES_NEED_NCURSES TRUE)
-    find_package(Curses REQUIRED)
-    target_include_directories(johninstall_lib PRIVATE ${CURSES_INCLUDE_DIRS})
-    target_compile_options(johninstall_lib PRIVATE ${CURSES_CFLAGS})
-    target_link_libraries(johninstall_lib PRIVATE ${CURSES_LIBRARIES})
+find_package(Curses REQUIRED)
+target_include_directories(johninstall_lib PRIVATE ${CURSES_INCLUDE_DIRS})
+target_compile_options(johninstall_lib PRIVATE ${CURSES_CFLAGS})
+target_link_libraries(johninstall_lib PRIVATE ${CURSES_LIBRARIES})
+
+find_package(nlohmann_json CONFIG REQUIRED)
+target_link_libraries(johninstall_lib PRIVATE nlohmann_json::nlohmann_json)
 
 # ---- Declare executable ----
 

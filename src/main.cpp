@@ -1,3 +1,4 @@
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -5,6 +6,8 @@
 
 #include "answer_box.hpp"
 #include "curse.hpp"
+#include "lib.hpp"
+#include "sysread.hpp"
 #include "windows.hpp"
 
 #define GRID_SPLIT_H 5
@@ -17,9 +20,12 @@
 int windows::h;
 int windows::w;
 window* windows::active = nullptr;
+nlohmann::json config::conf;
 
 int main()
 {
+  config::conf = config::read_conf();
+
   initscr();
   curs_set(0);
 
@@ -35,9 +41,17 @@ int main()
   }
   windows::partition_window_1();
 
-  if (w_ans.selection({"Next", "Back"}) == 1) {
+  // Get partitions from /proc/partitions
+  std::vector<std::string> parts = reader::get_parts();
+  parts.emplace_back("Back");
+  int part_choice = w_ans.selection(parts);
+
+  if (part_choice == parts.size() - 1) {
     exit();
   }
+
+  // add part_choice to config
+  windows::partition_window_2();
 
   getch();
   exit();
