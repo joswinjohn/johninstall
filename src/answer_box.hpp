@@ -1,14 +1,15 @@
 #include <string>
 #include <vector>
 
-#include "windows.hpp"
+#include "window.hpp"
+
 #define KEY_RETURN 10
 
 class answer_box : window
 {
 public:
-  answer_box()
-      : window(windows::h, windows::w, (windows::h * 4) + 2, 2)
+  answer_box(int h, int w)
+      : window((h * 2) + 2, w, (h * 3) + 2, 2)
   {
     box();
     keypad(/*v=*/true);

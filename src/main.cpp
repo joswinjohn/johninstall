@@ -1,14 +1,12 @@
 #include <string>
 #include <utility>
-#include <vector>
 
 #include <ncurses.h>
 
-#include "answer_box.hpp"
+#include "config.hpp"
 #include "curse.hpp"
-#include "lib.hpp"
-#include "sysread.hpp"
-#include "windows.hpp"
+#include "selector.hpp"
+#include "window.hpp"
 
 #define GRID_SPLIT_H 5
 #define GRID_SPLIT_W 1
@@ -17,42 +15,39 @@
   endwin(); \
   return 0;
 
-int windows::h;
-int windows::w;
-window* windows::active = nullptr;
+int window_selector::h;
+int window_selector::w;
+window* window_selector::active = nullptr;
 nlohmann::json config::conf;
+std::string config::config_loc;
 
 int main()
 {
-  config::conf = config::read_conf();
-
+  // start ncurses screen
   initscr();
   curs_set(0);
 
+  // initialize statics
+  config::config_loc = config::get_config_loc();
+  config::conf = config::read_conf();
+
   std::pair<int, int> size = curse::get_size();
-  windows::h = (size.first - 4) / GRID_SPLIT_H;
-  windows::w = (size.second - 4) / GRID_SPLIT_W;
+  window_selector::h = (size.first - 4) / GRID_SPLIT_H;
+  window_selector::w = (size.second - 4) / GRID_SPLIT_W;
 
-  windows::start_window();
-  answer_box w_ans;
+  // create answer_box
+  answer_box w_ans(window_selector::h, window_selector::w);
 
-  if (w_ans.selection({"Next", "Exit"}) == 1) {
-    exit();
-  }
-  windows::partition_window_1();
+  // initialize selector
+  window_selector selector {};
+  selector.ans = &w_ans;
 
-  // Get partitions from /proc/partitions
-  std::vector<std::string> parts = reader::get_parts();
-  parts.emplace_back("Back");
-  int part_choice = w_ans.selection(parts);
+  // start dialog windows
+  selector.start_window();
 
-  if (part_choice == parts.size() - 1) {
-    exit();
-  }
+  // write config
+  config::write_conf();
 
-  // add part_choice to config
-  windows::partition_window_2();
-
-  getch();
+  // exit
   exit();
 }

@@ -18,12 +18,12 @@ public:
   auto operator=(window&&) -> window& = delete;
 
   window(int height, int width, int beg_y, int beg_x)
-      : h(height)
+      : win(::newwin(height, width, beg_y, beg_x))
+      , h(height)
       , w(width)
       , y(beg_y)
       , x(beg_x)
   {
-    win = ::newwin(height, width, beg_y, beg_x);
     ::refresh();
   }
 
@@ -56,6 +56,8 @@ public:
   void reverse_on() const { wattron(win, A_REVERSE); }
 
   void reverse_off() const { wattroff(win, A_REVERSE); }
+
+  static void close() { endwin(); }
 
   ~window() { ::delwin(win); }
 };
