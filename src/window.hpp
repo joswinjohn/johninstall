@@ -27,7 +27,11 @@ public:
     ::refresh();
   }
 
-  void refresh() const { ::wrefresh(win); }
+  void refresh() const
+  {
+    ::touchwin(win);
+    ::wrefresh(win);
+  }
 
   void keypad(bool v) const { ::keypad(win, v); }
 
@@ -57,7 +61,7 @@ public:
 
   void reverse_off() const { wattroff(win, A_REVERSE); }
 
-  static void close() { endwin(); }
+  void close() const { delwin(win); }
 
   ~window() { ::delwin(win); }
 };

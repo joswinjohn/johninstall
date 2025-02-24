@@ -1,6 +1,9 @@
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
+
+#define PROC_PART_MINOR_OFFSET 12
 
 class reader
 {
@@ -14,8 +17,10 @@ public:
     if (stream.is_open()) {
       while (std::getline(stream, line)) {
         if (line.size() != 0) {
-          size_t last = line.find_last_of(' ');
-          ret.push_back(line.substr(last + 1));
+          if (line.substr(PROC_PART_MINOR_OFFSET, 1) != "0") {
+            size_t last = line.find_last_of(' ');
+            ret.push_back("/dev/" + line.substr(last + 1));
+          }
         }
       }
     }

@@ -20,9 +20,9 @@ nlohmann::json base_conf = nlohmann::json::parse(R"(
     "swap-part": ""
   },
   "hostname": "johnos",
-  "ntp": true,
   "packages": [],
-  "users": null,
+  "username": "",
+  "password": "",
   "timezone": "UTC"
 })");
 

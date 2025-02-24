@@ -1,5 +1,6 @@
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <ncurses.h>
 
@@ -18,6 +19,8 @@
 int window_selector::h;
 int window_selector::w;
 window* window_selector::active = nullptr;
+std::vector<window> window_selector::windows;
+
 nlohmann::json config::conf;
 std::string config::config_loc;
 
@@ -25,6 +28,7 @@ int main()
 {
   // start ncurses screen
   initscr();
+  cbreak();
   curs_set(0);
 
   // initialize statics
@@ -45,9 +49,5 @@ int main()
   // start dialog windows
   selector.start_window();
 
-  // write config
-  config::write_conf();
-
-  // exit
   exit();
 }

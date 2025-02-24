@@ -1,9 +1,19 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
+#include <ncurses.h>
+
 #include "answer_box.hpp"
 #include "config.hpp"
 #include "sysread.hpp"
 #include "window.hpp"
+
+#define draw_window() \
+  ans->redraw_box(); \
+  window win(h * 3, w, 2, 2); \
+  win.box();
 
 class window_selector
 {
@@ -15,18 +25,19 @@ public:
 
   static window* active;
 
+  static std::vector<window> windows;
+
   void start_window()
   {
-    window w_start(h * 3, w, 2, 2);
-    w_start.box();
-    w_start.print(2,
+    draw_window();
+    win.print(2,
                 4,
                 "This is the guided JohnOS installer. to continute or move "
                 "back " "use the \"Next\" and \"Back\" buttons");
-    active = &w_start;
+    active = &win;
 
     if (ans->selection({"Next", "Exit"}) == 1) {
-      window::close();
+      endwin();
       return;
     }
     part_1();
@@ -34,8 +45,7 @@ public:
 
   void part_1()
   {
-    window win(h * 3, w, 2, 2);
-    win.box();
+    draw_window();
     win.print(2, 4, R"(Select your EFI partition)");
     active = &win;
 
@@ -46,17 +56,17 @@ public:
 
     // If part choice is "Back"
     if (part_choice == parts.size() - 1) {
-      ::refresh();
+      win.close();
       start_window();
+    } else {
+      config::conf["disk-config"]["efi-part"] = parts[part_choice];
+      part_2();
     }
-    config::conf["disk-config"]["efi-part"] = parts[part_choice];
-    part_2();
   }
 
   void part_2()
   {
-    window win(h * 3, w, 2, 2);
-    win.box();
+    draw_window();
     win.print(2, 4, R"(Select your root partition)");
     active = &win;
 
@@ -68,15 +78,15 @@ public:
     // If part choice is "Back"
     if (part_choice == parts.size() - 1) {
       part_1();
+    } else {
+      config::conf["disk-config"]["root-part"] = parts[part_choice];
+      part_3();
     }
-    config::conf["disk-config"]["root-part"] = parts[part_choice];
-    part_3();
   }
 
   void part_3()
   {
-    window win(h * 3, w, 2, 2);
-    win.box();
+    draw_window();
     win.print(2, 4, R"(Select your swap partition)");
     active = &win;
 
@@ -88,13 +98,33 @@ public:
 
     // If part choice is "Back"
     if (part_choice == parts.size() - 1) {
-      part_3();
+      part_2();
     } else if (part_choice == parts.size() - 2) {
       config::conf["disk-config"]["swap-part"] = "";
-      // part_4();
+      create_user();
     } else {
       config::conf["disk-config"]["swap-part"] = parts[part_choice];
-      // part_4();
+      create_user();
     }
+  }
+
+  void create_user()
+  {
+    draw_window();
+    win.print(2, 4, R"(Select your username)");
+    active = &win;
+
+    // Get username and password inputs
+    std::vector<std::string> fields = {"Username", "Password", "Next", "Back"};
+    std::vector<std::string> inputs = ans->selection_input(fields);
+    config::conf["username"] = inputs.at(0);
+    config::conf["password"] = inputs.at(1);
+
+    if (fields.empty()) {
+      part_3();
+    }
+
+    // last window should contain write to conf.json
+    config::write_conf();
   }
 };
