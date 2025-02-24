@@ -42,11 +42,11 @@ public:
     }
     if (std::getenv("HOME") != nullptr) {
       const std::string home = std::getenv("HOME");
-      if (!home.empty() && home[0] != '\0') {
+      if (!home.empty()) {
         return home + "/.config/johninstall/";
       }
     }
-    return "./.config/johninstall/";
+    return "/tmp/johninstall";
   }
 
   static bool check_file(const std::string& name)
@@ -62,6 +62,7 @@ public:
       return nlohmann::json::parse(ifs);
     }
 
+    // initialize config if it doesn't exist
     std::filesystem::create_directory(config_loc);
     std::ofstream ofs(config_loc + "conf.json");
     ofs << std::setw(4) << base_conf;
@@ -71,6 +72,6 @@ public:
   static void write_conf()
   {
     std::ofstream ofs(config_loc + "conf.json");
-    ofs << std::setw(4) << conf;
+    ofs << std::setw(4) << conf << config_loc + "conf.json";
   }
 };

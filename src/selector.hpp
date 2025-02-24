@@ -35,6 +35,7 @@ public:
                 "This is the guided JohnOS installer. to continute or move "
                 "back " "use the \"Next\" and \"Back\" buttons");
     active = &win;
+    win.print(8, 4, "Config will be written to: " + config::config_loc);
 
     if (ans->selection({"Next", "Exit"}) == 1) {
       endwin();

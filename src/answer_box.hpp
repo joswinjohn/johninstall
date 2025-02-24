@@ -19,6 +19,11 @@ public:
     keypad(/*v=*/true);
   }
 
+  void print(int pos_y, int pos_x, const std::string& str)
+  {
+    window::print(pos_y, pos_x, str);
+  }
+
   void redraw_box()
   {
     werase(window::win);
