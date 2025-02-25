@@ -10,6 +10,8 @@
 #include <nlohmann/json_fwd.hpp>
 #include <sys/stat.h>
 
+#include "logger.hpp";
+
 nlohmann::json base_conf = nlohmann::json::parse(R"(
 {
   "language": "English",
@@ -62,6 +64,7 @@ public:
       try {
         return nlohmann::json::parse(ifs);
       } catch (...) {
+        logger::err("could not parse json");
         // send json parse error to logger
       }
     }

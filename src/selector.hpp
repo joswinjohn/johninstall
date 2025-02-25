@@ -121,7 +121,7 @@ public:
     config::conf["username"] = inputs.at(0);
     config::conf["password"] = inputs.at(1);
 
-    if (fields.empty()) {
+    if (inputs.empty()) {
       part_3();
     }
 

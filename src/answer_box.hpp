@@ -1,4 +1,5 @@
 #include <array>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -7,7 +8,11 @@
 #include "window.hpp"
 
 #define KEY_RETURN 10
+#define KEY_ESC 27
+#define KEY_BACKSPACE_I 127
+
 #define BUF_SIZE 128
+#define MAX_INPUT 20
 
 class answer_box : window
 {
@@ -78,9 +83,10 @@ public:
   {
     int key = 0;
     int highlighted = 0;
+    std::string whitespace(20, ' ');
 
     const int choices_size = static_cast<int>(choices.size());
-    std::vector<std::string> rets(choices_size, "       ");
+    std::vector<std::string> rets(2, "");
 
     while (true) {
       // fields
@@ -89,7 +95,9 @@ public:
         if (i == highlighted) {
           reverse_on();
         }
-        print(i + 1, static_cast<int>(choices.at(i).length()) + 1, rets.at(i));
+        print(i + 1,
+              static_cast<int>(choices.at(i).length()) + 2,
+              rets.at(i) + whitespace.substr(rets.at(i).size()));
         reverse_off();
       }
 
@@ -106,7 +114,7 @@ public:
       reverse_off();
 
       // get inputs
-      key = wget();
+      key = wgetch(win);
       switch (key) {
         case KEY_UP:
           highlighted--;
@@ -130,17 +138,52 @@ public:
         }
         // If the "Next" option is hit return rets vector
         if (highlighted == choices_size - 2) {
-          return rets;
+          if (rets.at(0).empty() || rets.at(1).empty()) {
+            print(5, 2, "Input a username and password");
+            continue;
+          } else {
+            return rets;
+          }
         }
-        // Otherwise listen for input
+        // Otherwise listen for input to write to field
         char buffer[BUF_SIZE];
-        curs_set(1);
-        mvwgetstr(window::win,
-                  highlighted + 1,
-                  choices.at(highlighted).length() + 2,
-                  buffer);
-        rets.emplace_back(buffer);
-        curs_set(1);
+        for (int i = 0; i < rets.at(highlighted).size(); i++) {
+          buffer[i] = rets.at(highlighted).at(i);
+        }
+
+        int ch;
+        int i = rets.at(highlighted).size();
+
+        move(highlighted + 1, choices.at(highlighted).length() + 2);
+
+        while ((ch = wgetch(win)) != '\n') {
+          if (ch == KEY_ESC) {
+            break;
+          }
+          if (ch == KEY_BACKSPACE || ch == KEY_BACKSPACE_I) {
+            if (i > 0) {
+              buffer[--i] = '\0';
+              reverse_on();
+              print(highlighted + 1,
+                    choices.at(highlighted).length() + 2,
+                    buffer + std::string(" "));
+              reverse_off();
+            }
+          } else if (i < sizeof(buffer) - 1) {
+            buffer[i++] = ch;
+            buffer[i] = '\0';
+            reverse_on();
+            print(
+                highlighted + 1, choices.at(highlighted).length() + 2, buffer);
+            reverse_off();
+          }
+        }
+
+        if (highlighted == 0) {
+          rets[0] = buffer;
+        } else if (highlighted == 1) {
+          rets[1] = buffer;
+        }
       }
     }
   }

@@ -39,7 +39,8 @@ int main()
   initscr();
   cbreak();
   curs_set(0);
-  logger::info("Initialized screen");
+  noecho();
+
   logger::info("Initialized screen");
 
   // initialize statics
