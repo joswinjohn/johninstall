@@ -1,3 +1,4 @@
+#include <fstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -6,6 +7,7 @@
 
 #include "config.hpp"
 #include "curse.hpp"
+#include "logger.hpp"
 #include "selector.hpp"
 #include "window.hpp"
 
@@ -24,12 +26,21 @@ std::vector<window> window_selector::windows;
 nlohmann::json config::conf;
 std::string config::config_loc;
 
+std::ofstream logger::ofs;
+
 int main()
 {
+  // logger
+  if (std::filesystem::is_directory(config::get_config_loc())) {
+    logger::ofs = std::ofstream(config::get_config_loc() + "out.log");
+  }
+
   // start ncurses screen
   initscr();
   cbreak();
   curs_set(0);
+  logger::info("Initialized screen");
+  logger::info("Initialized screen");
 
   // initialize statics
   config::config_loc = config::get_config_loc();

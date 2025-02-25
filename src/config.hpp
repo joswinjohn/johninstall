@@ -59,7 +59,11 @@ public:
   {
     if (check_file(config_loc + "conf.json")) {
       std::ifstream ifs(config_loc + "conf.json");
-      return nlohmann::json::parse(ifs);
+      try {
+        return nlohmann::json::parse(ifs);
+      } catch (...) {
+        // send json parse error to logger
+      }
     }
 
     // initialize config if it doesn't exist
@@ -72,6 +76,6 @@ public:
   static void write_conf()
   {
     std::ofstream ofs(config_loc + "conf.json");
-    ofs << std::setw(4) << conf << config_loc + "conf.json";
+    ofs << std::setw(4) << conf;
   }
 };
