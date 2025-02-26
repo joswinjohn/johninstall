@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -35,9 +36,10 @@ public:
                 "This is the guided JohnOS installer. to continute or move "
                 "back " "use the \"Next\" and \"Back\" buttons");
     active = &win;
-    win.print(8, 4, "Config will be written to: " + config::config_loc);
+    win.print(
+        (h * 3) - 4, 4, "Config will be written to: " + config::config_loc);
 
-    if (ans->selection({"Next", "Exit"}) == 1) {
+    if (ans->select_input({"Next", "Exit"}) == 1) {
       endwin();
       return;
     }
@@ -53,7 +55,7 @@ public:
     // Get partitions from /proc/partitions
     std::vector<std::string> parts = reader::get_parts();
     parts.emplace_back("Back");
-    int part_choice = ans->selection(parts);
+    int part_choice = ans->select_input(parts);
 
     // If part choice is "Back"
     if (part_choice == parts.size() - 1) {
@@ -74,7 +76,7 @@ public:
     // Get partitions from /proc/partitions
     std::vector<std::string> parts = reader::get_parts();
     parts.emplace_back("Back");
-    int part_choice = ans->selection(parts);
+    int part_choice = ans->select_input(parts);
 
     // If part choice is "Back"
     if (part_choice == parts.size() - 1) {
@@ -95,7 +97,7 @@ public:
     std::vector<std::string> parts = reader::get_parts();
     parts.emplace_back("No Swap");
     parts.emplace_back("Back");
-    int part_choice = ans->selection(parts);
+    int part_choice = ans->select_input(parts);
 
     // If part choice is "Back"
     if (part_choice == parts.size() - 1) {
@@ -116,16 +118,36 @@ public:
     active = &win;
 
     // Get username and password inputs
-    std::vector<std::string> fields = {"Username", "Password", "Next", "Back"};
-    std::vector<std::string> inputs = ans->userpass_input(fields);
-    config::conf["username"] = inputs.at(0);
-    config::conf["password"] = inputs.at(1);
+    std::vector<std::string> fields = {
+        "Hostname", "Username", "Password", "Next", "Back"};
+    std::vector<std::string> inputs = ans->field_input(fields);
 
     if (inputs.empty()) {
       part_3();
+      return;
     }
 
-    // last window should contain write to conf.json
-    config::write_conf();
+    config::conf["hostname"] = inputs.at(0);
+    config::conf["username"] = inputs.at(1);
+    config::conf["password"] = inputs.at(2);
+  }
+
+  void set_time()
+  {
+    draw_window();
+    win.print(2, 4, R"(Select your swap partition)");
+    active = &win;
+
+    // Get timezones from /usr/share/zoneinfo/tzdata.zi
+    std::vector<std::string> timezones = reader::get_times();
+    timezones.emplace_back("Back");
+    int choice = ans->select_input(timezones);
+
+    // If part choice is "Back"
+    if (choice == timezones.size() - 1) {
+      part_2();
+    } else {
+      config::conf["timezone"] = timezones[choice];
+    }
   }
 };

@@ -55,8 +55,6 @@ public:
     this->refresh();
   }
 
-  int wget() const { return (wgetch(win)); }
-
   void reverse_on() const { wattron(win, A_REVERSE); }
 
   void reverse_off() const { wattroff(win, A_REVERSE); }

@@ -61,5 +61,8 @@ int main()
   // start dialog windows
   selector.start_window();
 
+  // last window should contain write to conf.json
+  config::write_conf();
+
   exit();
 }

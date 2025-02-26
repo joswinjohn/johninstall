@@ -37,7 +37,7 @@ public:
 
   WINDOW* get_window() { return window::win; }
 
-  int selection(const std::vector<std::string>& choices)
+  int select_input(const std::vector<std::string>& choices)
   {
     int key = 0;
     int highlighted = 0;
@@ -45,14 +45,18 @@ public:
     int choices_size = static_cast<int>(choices.size());
 
     while (true) {
+      int col = 1;
       for (int i = 0; i < choices_size; i++) {
+        if (i != 0 && ((h - 4) % i == 0)) {
+          col++;
+        }
         if (i == highlighted) {
           reverse_on();
         }
-        print(i + 1, 1, choices.at(i));
+        print((i + 1) - ((h - 4) * (col - 1)), col, choices.at(i));
         reverse_off();
       }
-      key = wget();
+      key = wgetch(win);
       switch (key) {
         case KEY_UP:
           highlighted--;
@@ -78,19 +82,18 @@ public:
     return highlighted;
   }
 
-  std::vector<std::string> userpass_input(
-      const std::vector<std::string>& choices)
+  std::vector<std::string> field_input(const std::vector<std::string>& choices)
   {
     int key = 0;
     int highlighted = 0;
     std::string whitespace(MAX_INPUT, ' ');
 
-    const int choices_size = static_cast<int>(choices.size());
-    std::vector<std::string> rets(2, "");
+    const int choices_size = static_cast<int>(choices.size()) - 2;
+    std::vector<std::string> rets(choices_size, "");
 
     while (true) {
       // fields
-      for (int i = 0; i < choices_size - 2; i++) {
+      for (int i = 0; i < choices_size; i++) {
         print(i + 1, 1, choices.at(i));
         if (i == highlighted) {
           reverse_on();
@@ -102,15 +105,15 @@ public:
       }
 
       // "Next" and "Back" buttons
-      if (choices_size - 2 == highlighted) {
+      if (choices_size == highlighted) {
         reverse_on();
       }
-      print(choices_size - 1, 1, "Next");
+      print(choices_size + 1, 1, "Next");
       reverse_off();
-      if (choices_size - 1 == highlighted) {
+      if (choices_size + 1 == highlighted) {
         reverse_on();
       }
-      print(choices_size, 1, "Back");
+      print(choices_size + 2, 1, "Back");
       reverse_off();
 
       // get inputs
@@ -119,12 +122,12 @@ public:
         case KEY_UP:
           highlighted--;
           if (highlighted == -1) {
-            highlighted = choices_size - 1;
+            highlighted = choices_size + 1;
           }
           break;
         case KEY_DOWN:
           highlighted++;
-          if (highlighted == choices_size) {
+          if (highlighted == choices_size + 2) {
             highlighted = 0;
           }
           break;
@@ -133,13 +136,13 @@ public:
       }
       if (key == KEY_RETURN) {
         // If the "Back" option is hit return empty vector
-        if (highlighted == choices_size - 1) {
+        if (highlighted == choices_size + 1) {
           return {};
         }
         // If the "Next" option is hit return rets vector
-        if (highlighted == choices_size - 2) {
+        if (highlighted == choices_size) {
           if (rets.at(0).empty() || rets.at(1).empty()) {
-            print(choices_size + 1, 2, "Input a username and password");
+            print(choices_size + 4, 1, "Input a username and password");
             continue;
           }
           return rets;
@@ -178,11 +181,7 @@ public:
           }
         }
 
-        if (highlighted == 0) {
-          rets[0] = buffer;
-        } else if (highlighted == 1) {
-          rets[1] = buffer;
-        }
+        rets[highlighted] = buffer;
       }
     }
   }
