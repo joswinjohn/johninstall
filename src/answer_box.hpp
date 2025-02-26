@@ -78,12 +78,12 @@ public:
     return highlighted;
   }
 
-  std::vector<std::string> selection_input(
+  std::vector<std::string> userpass_input(
       const std::vector<std::string>& choices)
   {
     int key = 0;
     int highlighted = 0;
-    std::string whitespace(20, ' ');
+    std::string whitespace(MAX_INPUT, ' ');
 
     const int choices_size = static_cast<int>(choices.size());
     std::vector<std::string> rets(2, "");
@@ -139,11 +139,10 @@ public:
         // If the "Next" option is hit return rets vector
         if (highlighted == choices_size - 2) {
           if (rets.at(0).empty() || rets.at(1).empty()) {
-            print(5, 2, "Input a username and password");
+            print(choices_size + 1, 2, "Input a username and password");
             continue;
-          } else {
-            return rets;
           }
+          return rets;
         }
         // Otherwise listen for input to write to field
         char buffer[BUF_SIZE];

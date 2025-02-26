@@ -112,12 +112,12 @@ public:
   void create_user()
   {
     draw_window();
-    win.print(2, 4, R"(Select your username)");
+    win.print(2, 4, R"(Enter a username and password)");
     active = &win;
 
     // Get username and password inputs
     std::vector<std::string> fields = {"Username", "Password", "Next", "Back"};
-    std::vector<std::string> inputs = ans->selection_input(fields);
+    std::vector<std::string> inputs = ans->userpass_input(fields);
     config::conf["username"] = inputs.at(0);
     config::conf["password"] = inputs.at(1);
 

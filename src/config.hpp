@@ -10,7 +10,7 @@
 #include <nlohmann/json_fwd.hpp>
 #include <sys/stat.h>
 
-#include "logger.hpp";
+#include "logger.hpp"
 
 nlohmann::json base_conf = nlohmann::json::parse(R"(
 {

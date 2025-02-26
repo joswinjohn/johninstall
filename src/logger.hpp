@@ -1,17 +1,32 @@
+#pragma once
+
+#include <chrono>
 #include <ctime>
 #include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 class logger
 {
 public:
   static std::ofstream ofs;
 
+  static std::string get_time()
+  {
+    std::time_t t =
+        std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::tm ltime;
+    localtime_r(&t, &ltime);
+    std::stringstream stream;
+    stream << std::put_time(&ltime, "%H:%M:%S");
+    return stream.str();
+  }
+
   static void stream_write(const std::string& out)
   {
-    time_t now;
-    time(&now);
-    std::string dt = ctime(&now);
-    ofs << "(" + dt + ") " + out + '\n';
+    ofs << "(" + get_time() + ") " + out + '\n';
   }
 
   static void info(const std::string& out) { stream_write("[INFO] " + out); }
