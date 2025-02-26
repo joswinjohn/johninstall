@@ -33,15 +33,14 @@ int main()
   // logger
   if (std::filesystem::is_directory(config::get_config_loc())) {
     logger::ofs = std::ofstream(config::get_config_loc() + "out.log");
+    logger::ofs << "Initialized Logs" << '\n';
+    logger::ofs.close();
   }
-
   // start ncurses screen
   initscr();
   cbreak();
   curs_set(0);
   noecho();
-
-  logger::info("Initialized screen");
 
   // initialize statics
   config::config_loc = config::get_config_loc();

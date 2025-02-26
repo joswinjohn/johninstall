@@ -2,11 +2,14 @@
 
 #include <chrono>
 #include <ctime>
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
-#include <iostream>
+#include <ios>
 #include <sstream>
 #include <string>
+
+#include "config.hpp"
 
 class logger
 {
@@ -26,7 +29,12 @@ public:
 
   static void stream_write(const std::string& out)
   {
+    if (std::filesystem::is_directory(config::get_config_loc())) {
+      ofs = std::ofstream(config::get_config_loc() + "out.log",
+                          std::ios_base::app);
+    }
     ofs << "(" + get_time() + ") " + out + '\n';
+    ofs.close();
   }
 
   static void info(const std::string& out) { stream_write("[INFO] " + out); }

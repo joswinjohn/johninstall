@@ -130,12 +130,13 @@ public:
     config::conf["hostname"] = inputs.at(0);
     config::conf["username"] = inputs.at(1);
     config::conf["password"] = inputs.at(2);
+    set_time();
   }
 
   void set_time()
   {
     draw_window();
-    win.print(2, 4, R"(Select your swap partition)");
+    win.print(2, 4, R"(Select your timezone)");
     active = &win;
 
     // Get timezones from /usr/share/zoneinfo/tzdata.zi

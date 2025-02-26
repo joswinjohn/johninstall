@@ -3,14 +3,11 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <string>
 
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
 #include <sys/stat.h>
-
-#include "logger.hpp"
 
 nlohmann::json base_conf = nlohmann::json::parse(R"(
 {
@@ -64,7 +61,6 @@ public:
       try {
         return nlohmann::json::parse(ifs);
       } catch (...) {
-        logger::err("could not parse json");
         // send json parse error to logger
       }
     }

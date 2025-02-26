@@ -54,9 +54,9 @@ public:
 
   static std::vector<std::string> get_times()
   {
-    std::string times = exec("ls");
-    //"awk '/^Z/ { print $2 }; /^L/ { print $3 }'
-    /// usr/share/zoneinfo/tzdata.zi");
+    std::string times = exec(
+        "awk '/^Z/ { print $2 }; /^L/ { print $3 }' "
+        "/usr/share/zoneinfo/tzdata.zi");
 
     std::vector<std::string> ret {};
     std::stringstream ss(times);

@@ -5,6 +5,7 @@
 
 #include <ncurses.h>
 
+#include "logger.hpp"
 #include "window.hpp"
 
 #define KEY_RETURN 10
@@ -13,6 +14,8 @@
 
 #define BUF_SIZE 128
 #define MAX_INPUT 20
+
+#define COL_WIDTH 8
 
 class answer_box : window
 {
@@ -45,16 +48,24 @@ public:
     int choices_size = static_cast<int>(choices.size());
 
     while (true) {
-      int col = 1;
-      for (int i = 0; i < choices_size; i++) {
-        if (i != 0 && ((h - 4) % i == 0)) {
-          col++;
+      int n = 0;
+      int cols = w / COL_WIDTH;
+      logger::info(std::to_string(cols) + ", " + std::to_string(h) + ", "
+                   + std::to_string(w));
+      for (int i = 0; i < cols; i++) {
+        for (int j = 1; j <= h - 4 && n < choices_size; j++) {
+          logger::info(std::to_string(i) + ", " + std::to_string(j) + ", "
+                       + std::to_string(n));
+          if (n == highlighted) {
+            reverse_on();
+          }
+          logger::info(choices.at(n));
+          logger::info(std::to_string(j + 1) + ", "
+                       + std::to_string(1 + (i * COL_WIDTH)));
+          print((j + 1), 1 + (i * COL_WIDTH), choices.at(n));
+          reverse_off();
+          n++;
         }
-        if (i == highlighted) {
-          reverse_on();
-        }
-        print((i + 1) - ((h - 4) * (col - 1)), col, choices.at(i));
-        reverse_off();
       }
       key = wgetch(win);
       switch (key) {
