@@ -15,7 +15,7 @@
 #define BUF_SIZE 128
 #define MAX_INPUT 20
 
-#define COL_WIDTH 8
+#define COL_WIDTH 20
 
 class answer_box : window
 {
@@ -50,19 +50,26 @@ public:
     while (true) {
       int n = 0;
       int cols = w / COL_WIDTH;
-      logger::info(std::to_string(cols) + ", " + std::to_string(h) + ", "
-                   + std::to_string(w));
-      for (int i = 0; i < cols; i++) {
-        for (int j = 1; j <= h - 4 && n < choices_size; j++) {
-          logger::info(std::to_string(i) + ", " + std::to_string(j) + ", "
-                       + std::to_string(n));
+      int offset = 0;
+
+      for (int row = 1; row <= h - 2; row++) {
+        for (int col = 0; col < cols; col++) {
           if (n == highlighted) {
             reverse_on();
           }
-          logger::info(choices.at(n));
-          logger::info(std::to_string(j + 1) + ", "
-                       + std::to_string(1 + (i * COL_WIDTH)));
-          print((j + 1), 1 + (i * COL_WIDTH), choices.at(n));
+          print(row, 1 + (col * COL_WIDTH), choices.at(n + offset));
+          reverse_off();
+          n++;
+        }
+      }
+
+      // prev
+      for (int i = 0; i < cols; i++) {
+        for (int j = 1; j <= h - 2 && n < choices_size; j++) {
+          if (n == highlighted) {
+            reverse_on();
+          }
+          print(j, 1 + (i * COL_WIDTH), choices.at(n + roll_offset));
           reverse_off();
           n++;
         }
