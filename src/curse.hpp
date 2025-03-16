@@ -13,6 +13,19 @@ public:
     int w;
 
     getmaxyx(stdscr, h, w);
-    return (std::pair(h, w));
+    return {h, w};
+  }
+
+  static void start_curses()
+  {
+    initscr();
+    cbreak();
+    curs_set(0);
+    noecho();
+  }
+
+  static void stop_curses()
+  {
+    endwin();
   }
 };

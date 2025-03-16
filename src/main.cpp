@@ -37,10 +37,7 @@ int main()
     logger::ofs.close();
   }
   // start ncurses screen
-  initscr();
-  cbreak();
-  curs_set(0);
-  noecho();
+  curse::start_curses();
 
   // initialize statics
   config::config_loc = config::get_config_loc();
@@ -50,8 +47,8 @@ int main()
   window_selector::h = (size.first - 4) / GRID_SPLIT_H;
   window_selector::w = (size.second - 4) / GRID_SPLIT_W;
 
-  // create answer_box
-  answer_box w_ans(window_selector::h, window_selector::w);
+  // create answer box
+  inputs w_ans(window_selector::h, window_selector::w);
 
   // initialize selector
   window_selector selector {};

@@ -17,10 +17,10 @@
 
 #define COL_WIDTH 20
 
-class answer_box : window
+class inputs : window
 {
 public:
-  answer_box(int h, int w)
+  inputs(int h, int w)
       : window((h * 2) + 2, w, (h * 3) + 2, 2)
   {
     box();
@@ -50,18 +50,6 @@ public:
     while (true) {
       int n = 0;
       int cols = w / COL_WIDTH;
-      int offset = 0;
-
-      for (int row = 1; row <= h - 2; row++) {
-        for (int col = 0; col < cols; col++) {
-          if (n == highlighted) {
-            reverse_on();
-          }
-          print(row, 1 + (col * COL_WIDTH), choices.at(n + offset));
-          reverse_off();
-          n++;
-        }
-      }
 
       // prev
       for (int i = 0; i < cols; i++) {
@@ -69,7 +57,7 @@ public:
           if (n == highlighted) {
             reverse_on();
           }
-          print(j, 1 + (i * COL_WIDTH), choices.at(n + roll_offset));
+          print(j, 1 + (i * COL_WIDTH), choices.at(n));
           reverse_off();
           n++;
         }

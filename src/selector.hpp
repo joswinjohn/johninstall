@@ -6,10 +6,11 @@
 
 #include <ncurses.h>
 
-#include "answer_box.hpp"
+#include "inputs.hpp"
 #include "config.hpp"
 #include "sysread.hpp"
 #include "window.hpp"
+#include "curse.hpp"
 
 #define draw_window() \
   ans->redraw_box(); \
@@ -19,7 +20,7 @@
 class window_selector
 {
 public:
-  answer_box* ans;
+  inputs* ans;
 
   static int h;
   static int w;
@@ -28,8 +29,7 @@ public:
 
   static std::vector<window> windows;
 
-  void start_window()
-  {
+  void start_window() {
     draw_window();
     win.print(2,
                 4,
@@ -40,14 +40,13 @@ public:
         (h * 3) - 4, 4, "Config will be written to: " + config::config_loc);
 
     if (ans->select_input({"Next", "Exit"}) == 1) {
-      endwin();
+      curse::stop_curses();
       return;
     }
     part_1();
   }
 
-  void part_1()
-  {
+  void part_1() {
     draw_window();
     win.print(2, 4, R"(Select your EFI partition)");
     active = &win;
@@ -67,8 +66,7 @@ public:
     }
   }
 
-  void part_2()
-  {
+  void part_2() {
     draw_window();
     win.print(2, 4, R"(Select your root partition)");
     active = &win;
@@ -87,8 +85,7 @@ public:
     }
   }
 
-  void part_3()
-  {
+  void part_3() {
     draw_window();
     win.print(2, 4, R"(Select your swap partition)");
     active = &win;
@@ -111,8 +108,7 @@ public:
     }
   }
 
-  void create_user()
-  {
+  void create_user() {
     draw_window();
     win.print(2, 4, R"(Enter a username and password)");
     active = &win;
@@ -133,8 +129,7 @@ public:
     set_time();
   }
 
-  void set_time()
-  {
+  void set_time() {
     draw_window();
     win.print(2, 4, R"(Select your timezone)");
     active = &win;
